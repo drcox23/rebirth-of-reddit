@@ -1,0 +1,10 @@
+body {
+  background: cornflowerblue;
+}
+
+.postMedia {
+  max-width: 400px;
+  max-height: 400px;
+  width: auto;
+  height: auto;
+}
