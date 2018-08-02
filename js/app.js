@@ -16,7 +16,15 @@ mediaCreator = (myClass, parent, link) => {
   const newMedia = document.createElement("img");
   newMedia.className = myClass;
   parent.appendChild(newMedia);
-  newMedia.src = link;
+
+  let theLink = link.substring(0, link.length);
+  let x = link.substring(link.length - 4);
+  if (x === "gifv") {
+    theLink = link.substring(0, link.length - 1);
+  }
+  // console.log("link: ", theLink);
+
+  newMedia.src = theLink;
 };
 
 const getRekd = (url, callback) => {
