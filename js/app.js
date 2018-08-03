@@ -1,27 +1,5 @@
 console.log("sanity");
 
-// trying to fix the CORS blocker
-// var express = require("express");
-// var app = express();
-
-// var cors = require("cors");
-// var bodyParser = require("body-parser");
-
-// //enables cors
-// app.use(
-//   cors({
-//     allowedHeaders: ["sessionId", "Content-Type"],
-//     exposedHeaders: ["sessionId"],
-//     origin: "*",
-//     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-//     preflightContinue: false
-// //   })
-// // );
-
-// require("./router/index")(app);
-
-// primary reddit URL
-
 let redditURL = "https://www.reddit.com/r/aww.json";
 
 elementCreator = (elem, myClass, parent, content) => {
@@ -35,7 +13,9 @@ elementCreator = (elem, myClass, parent, content) => {
 };
 
 mediaCreator = (myClass, parent, link) => {
-  if (!link.secure_media) {
+  // if its an image or gif
+
+  if (link.post_hint === "image") {
     let newMedia = document.createElement("img");
     newMedia.className = myClass;
     parent.appendChild(newMedia);
@@ -45,10 +25,12 @@ mediaCreator = (myClass, parent, link) => {
     if (x === "gifv") {
       theLink = link.url.substring(0, link.url.length - 1);
     }
-    console.log("link: ", theLink);
+    // console.log("link: ", theLink);
 
     newMedia.src = theLink;
-  } else if (link.secure_media.reddit_video) {
+
+    // if its a video
+  } else if (link.post_hint === "hosted: video") {
     let newMedia = document.createElement("video");
     // newMedia.play();
     let playPromise = newMedia.play();
@@ -59,6 +41,7 @@ mediaCreator = (myClass, parent, link) => {
         })
         .catch(error => {});
     }
+
     newMedia.className = myClass;
     parent.appendChild(newMedia);
     let theLink = link.secure_media.reddit_video.fallback_url;
@@ -67,7 +50,14 @@ mediaCreator = (myClass, parent, link) => {
     let newMedia = document.createElement("img");
     newMedia.className = myClass;
     parent.appendChild(newMedia);
-    newMedia.src = link.thumbnail;
+    let theLink = link.url.substring(0, link.url.length);
+    let x = link.url.substring(link.url.length - 4);
+    if (x === "gifv") {
+      theLink = link.url.substring(0, link.url.length - 1);
+      newMedia.src = theLink;
+    } else {
+      newMedia.src = link.thumbnail;
+    }
   }
 };
 
@@ -84,10 +74,11 @@ firstCall = getRekd(redditURL, res => {
   console.log("posts: ", posts);
 
   for (let i = 0; i < posts.length; i++) {
-    console.log(posts[i]);
-    console.log(posts[i].data.title);
+    // console.log(posts[i]);
+    // console.log(posts[i].data.title);
 
     let redditItem = elementCreator("div", "redPost", postIt);
+    let postMedia = mediaCreator("postMedia", redditItem, posts[i].data);
     let postTitle = elementCreator(
       "h2",
       "redTitle",
@@ -101,8 +92,10 @@ firstCall = getRekd(redditURL, res => {
       "by: " +
         posts[i].data.author +
         " • " +
+        posts[i].data.num_comments +
+        " Comments" +
+        " • " +
         posts[i].data.subreddit_name_prefixed
     );
-    let postMedia = mediaCreator("postMedia", postTitle, posts[i].data);
   }
 });
