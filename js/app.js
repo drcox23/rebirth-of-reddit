@@ -13,18 +13,35 @@ elementCreator = (elem, myClass, parent, content) => {
 };
 
 mediaCreator = (myClass, parent, link) => {
-  const newMedia = document.createElement("img");
-  newMedia.className = myClass;
-  parent.appendChild(newMedia);
+  if (!link.secure_media) {
+    let newMedia = document.createElement("img");
+    newMedia.className = myClass;
+    parent.appendChild(newMedia);
 
-  let theLink = link.substring(0, link.length);
-  let x = link.substring(link.length - 4);
-  if (x === "gifv") {
-    theLink = link.substring(0, link.length - 1);
+    let theLink = link.url.substring(0, link.length);
+    let x = link.url.substring(link.length - 4);
+    if (x === "gifv") {
+      theLink = link.url.substring(0, link.length - 1);
+    }
+    // console.log("link: ", theLink);
+
+    newMedia.src = theLink;
+  } else if (link.secure_media.reddit_video) {
+    let newMedia = document.createElement("video");
+    let playPromise = newMedia.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(_ => {
+          newMedia.pause();
+        })
+        .catch(erro => {});
+    }
+    newMedia.className = myClass;
+    parent.appendChild(newMedia);
+
+    let theLink = link.secure_media.reddit_video.dash_url;
+    newMedia.src = theLink;
   }
-  // console.log("link: ", theLink);
-
-  newMedia.src = theLink;
 };
 
 const getRekd = (url, callback) => {
@@ -43,7 +60,7 @@ firstCall = getRekd(redditURL, res => {
     console.log(posts[i]);
     console.log(posts[i].data.title);
 
-    let redditItem = elementCreator("div", "redPost", company);
+    let redditItem = elementCreator("div", "redPost", postIt);
     let postTitle = elementCreator(
       "h2",
       "redTitle",
@@ -59,6 +76,6 @@ firstCall = getRekd(redditURL, res => {
         " • " +
         posts[i].data.subreddit_name_prefixed
     );
-    let postMedia = mediaCreator("postMedia", postTitle, posts[i].data.url);
+    let postMedia = mediaCreator("postMedia", postTitle, posts[i].data);
   }
 });
