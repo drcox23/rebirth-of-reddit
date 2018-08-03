@@ -79,23 +79,37 @@ firstCall = getRekd(redditURL, res => {
 
     let redditItem = elementCreator("div", "redPost", postIt);
     let postMedia = mediaCreator("postMedia", redditItem, posts[i].data);
+    let infoDiv = elementCreator("div", "infoDiv", redditItem);
     let postTitle = elementCreator(
       "h2",
       "redTitle",
-      redditItem,
+      infoDiv,
       posts[i].data.title
     );
     let postInfo = elementCreator(
       "div",
       "postInfo",
-      postTitle,
+      infoDiv,
       "by: " +
         posts[i].data.author +
         " • " +
         posts[i].data.num_comments +
-        " Comments" +
-        " • " +
-        posts[i].data.subreddit_name_prefixed
+        " Comments"
+      // + " • " +
+      // posts[i].data.subreddit_name_prefixed
     );
+  }
+  console.log;
+
+  let titleDiv = document.getElementsByClassName("redTitle");
+  for (i = 0; i < titleDiv.length; i++) {
+    console.log("char: " + [i], titleDiv[i].innerHTML.length);
+    if (titleDiv[i].innerHTML.length > 65) {
+      console.log("****");
+      titleDiv[i].innerHTML = titleDiv[i].innerHTML.substring(0, 65) + "...";
+    } else {
+      titleDiv[i].innerHTML;
+    }
+    console.log("title: ", titleDiv[i].innerHTML);
   }
 });
