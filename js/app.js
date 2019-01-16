@@ -46,6 +46,21 @@ mediaCreator = (myClass, parent, link) => {
     parent.appendChild(newMedia);
     let theLink = link.secure_media.reddit_video.fallback_url;
     newMedia.src = theLink;
+  } else if (
+    link.post_hint === "link" &&
+    link.url.substring(0, link.url.length - 4 === ".com")
+  ) {
+    let newMedia = document.createElement("img");
+    newMedia.className = myClass;
+    parent.appendChild(newMedia);
+    let theLink = link.url.substring(0, link.url.length);
+    let x = link.url.substring(link.url.length - 4);
+    if (x === "gifv") {
+      theLink = link.url.substring(0, link.url.length - 1);
+      newMedia.src = theLink;
+    } else {
+      newMedia.src = link.thumbnail;
+    }
   } else {
     let newMedia = document.createElement("img");
     newMedia.className = myClass;
